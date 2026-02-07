@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 3-Feb-2014 7:26:12 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+ <class name="Student" table="STUDENT">
+  <id name="studentId" type="int">
+   <column name="STUDENT_ID" scale="0"/>
+   <generator class="assigned"/>
+  </id>
+  <property generated="never" lazy="false" name="studentName" type="string">
+   <column length="400" name="STUDENT_NAME" not-null="true"/>
+  </property>
+  <set fetch="select" lazy="true" name="courses" sort="unsorted" table="STUDENT_COURSE">
+   <key>
+    <column name="STUDENT_ID" not-null="true" scale="0"/>
+   </key>
+   <many-to-many entity-name="Course" unique="false">
+    <column name="COURSE_ID" not-null="true" scale="0"/>
+   </many-to-many>
+  </set>
+ </class>
+</hibernate-mapping>

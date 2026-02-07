@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">
+            oracle.jdbc.driver.OracleDriver
+        </property>
+        <property name="hibernate.connection.url">
+            jdbc:oracle:thin:@//bdlog660.ens.ad.etsmtl.ca:1521/ORCLPDB1
+        </property>
+        <property name="hibernate.connection.username">EQUIPE201</property>
+        <property name="hibernate.connection.password">pvzDSUVB</property>
+        <property name="hibernate.dialect">
+            org.hibernate.dialect.OracleDialect
+        </property>
+        <property name="hibernate.default_schema">EQUIPE201</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">none</property>
+    </session-factory>
+</hibernate-configuration>
