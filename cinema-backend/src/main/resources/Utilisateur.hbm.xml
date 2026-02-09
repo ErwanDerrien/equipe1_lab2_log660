@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="ca.etsmtl.log660.cinema_backend.model.Utilisateur" table="UTILISATEUR">
+        <id name="idUtilisateur" column="ID_UTILISATEUR">
+            <generator class="native"/>
+        </id>
+        <property name="nom" column="NOM"/>
+        <property name="prenom" column="PRENOM"/>
+        <property name="courriel" column="COURRIEL"/>
+        <property name="telephone" column="TELEPHONE"/>
+        <property name="adresseCivique" column="ADRESSE_CIVIQUE"/>
+        <property name="rue" column="RUE"/>
+        <property name="ville" column="VILLE"/>
+        <property name="province" column="PROVINCE"/>
+        <property name="codePostal" column="CODE_POSTAL"/>
+        <property name="dateNaissance" column="DATE_NAISSANCE" type="date"/>
+        <property name="motDePasse" column="MOT_DE_PASSE"/>
+    </class>
+</hibernate-mapping>

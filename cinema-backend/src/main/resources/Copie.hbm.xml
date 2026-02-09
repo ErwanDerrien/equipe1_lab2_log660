@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="ca.etsmtl.log660.cinema_backend.model.Copie" table="COPIE">
+        <id name="idCopie" column="ID_COPIE">
+            <generator class="native"/>
+        </id>
+        <property name="numeroCode" column="NUMERO_CODE"/>
+        <property name="disponible" column="DISPONIBLE"/>
+        <many-to-one name="film" column="ID_FILM" not-null="true"/>
+    </class>
+</hibernate-mapping>

@@ -1,26 +1,20 @@
 package ca.etsmtl.log660.cinema_backend.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "FORFAIT")
 public class Forfait {
 
-    @Id
-    @Column(name = "CODE", length = 1)
     private String code;
 
-    @Column(name = "NOM", length = 20, nullable = false)
     private String nom;
 
-    @Column(name = "COUT_MENSUEL", precision = 5, scale = 2, nullable = false)
     private Double coutMensuel;
 
-    @Column(name = "LOCATIONS_MAX", precision = 3, nullable = false)
     private Integer locationsMax;
 
-    @Column(name = "DUREE_MAX_JOURS", precision = 4, nullable = false)
     private Integer dureeMaxJours;
+
+    // Constructeur vide
+    public Forfait() {
+    }
 
     // Getters et Setters
     public String getCode() {

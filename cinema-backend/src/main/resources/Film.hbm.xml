@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="ca.etsmtl.log660.cinema_backend.model.Film" table="FILM">
+        <id name="idFilm" column="ID_FILM">
+            <generator class="native"/>
+        </id>
+        <property name="titre" column="TITRE"/>
+        <property name="anneeSortie" column="ANNEE_SORTIE"/>
+        <property name="langueOriginale" column="LANGUE_ORIGINALE"/>
+        <property name="dureeMinutes" column="DUREE_MINUTES"/>
+        <property name="resume" column="RESUME"/>
+        <property name="urlAffiche" column="URL_AFFICHE"/>
+        <property name="idRealisateur" column="ID_REALISATEUR"/>
+        <bag name="copies" inverse="true" cascade="all">
+            <key column="ID_FILM"/>
+            <one-to-many class="ca.etsmtl.log660.cinema_backend.model.Copie"/>
+        </bag>
+    </class>
+</hibernate-mapping>

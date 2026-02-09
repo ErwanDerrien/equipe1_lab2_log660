@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="ca.etsmtl.log660.cinema_backend.model.Client" table="CLIENT">
+        <id name="idClient" column="ID_CLIENT">
+            <generator class="native"/>
+        </id>
+        <property name="typeForfait" column="TYPE_FORFAIT"/>
+        <many-to-one name="utilisateur" column="ID_UTILISATEUR" unique="true" not-null="true"/>
+        <bag name="locations" inverse="true" cascade="all">
+            <key column="ID_CLIENT"/>
+            <one-to-many class="ca.etsmtl.log660.cinema_backend.model.Location"/>
+        </bag>
+    </class>
+</hibernate-mapping>

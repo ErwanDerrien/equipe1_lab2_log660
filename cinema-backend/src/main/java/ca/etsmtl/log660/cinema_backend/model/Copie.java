@@ -1,27 +1,19 @@
 package ca.etsmtl.log660.cinema_backend.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "COPIE")
 public class Copie {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "copie_seq")
-    @SequenceGenerator(name = "copie_seq", sequenceName = "SEQ_COPIE", allocationSize = 1)
-    @Column(name = "ID_COPIE")
     private Long idCopie;
 
-    @Column(name = "NUMERO_CODE", length = 50, nullable = false, unique = true)
     private String numeroCode;
 
-    @Column(name = "DISPONIBLE", length = 1, nullable = false)
     private String disponible;
 
     // Relation N-1 avec Film
-    @ManyToOne
-    @JoinColumn(name = "ID_FILM", nullable = false)
     private Film film;
+
+    // Constructeur vide
+    public Copie() {
+    }
 
     // Getters et Setters
     public Long getIdCopie() {

@@ -1,51 +1,36 @@
 package ca.etsmtl.log660.cinema_backend.model;
 
-import jakarta.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table(name = "UTILISATEUR")
 public class Utilisateur {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "utilisateur_seq")
-    @SequenceGenerator(name = "utilisateur_seq", sequenceName = "SEQ_UTILISATEUR", allocationSize = 1)
-    @Column(name = "ID_UTILISATEUR")
     private Long idUtilisateur;
 
-    @Column(name = "NOM", length = 50, nullable = false)
     private String nom;
 
-    @Column(name = "PRENOM", length = 50, nullable = false)
     private String prenom;
 
-    @Column(name = "COURRIEL", length = 100, nullable = false, unique = true)
     private String courriel;
 
-    @Column(name = "TELEPHONE", length = 20, nullable = false)
     private String telephone;
 
-    @Column(name = "ADRESSE_CIVIQUE", length = 10, nullable = false)
     private String adresseCivique;
 
-    @Column(name = "RUE", length = 100, nullable = false)
     private String rue;
 
-    @Column(name = "VILLE", length = 50, nullable = false)
     private String ville;
 
-    @Column(name = "PROVINCE", length = 50, nullable = false)
     private String province;
 
-    @Column(name = "CODE_POSTAL", length = 10, nullable = false)
     private String codePostal;
 
-    @Column(name = "DATE_NAISSANCE", nullable = false)
-    @Temporal(TemporalType.DATE)
     private Date dateNaissance;
 
-    @Column(name = "MOT_DE_PASSE", length = 100, nullable = false)
     private String motDePasse;
+
+    // Constructeur vide
+    public Utilisateur() {
+    }
 
     // Getters et Setters
     public Long getIdUtilisateur() {

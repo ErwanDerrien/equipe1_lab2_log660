@@ -1,42 +1,31 @@
 package ca.etsmtl.log660.cinema_backend.model;
 
-import jakarta.persistence.*;
 import java.util.List;
 
-@Entity
-@Table(name = "FILM")
 public class Film {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "film_seq")
-    @SequenceGenerator(name = "film_seq", sequenceName = "SEQ_FILM", allocationSize = 1)
-    @Column(name = "ID_FILM")
     private Long idFilm;
 
-    @Column(name = "TITRE", length = 200, nullable = false)
     private String titre;
 
-    @Column(name = "ANNEE_SORTIE", precision = 4, nullable = false)
     private Integer anneeSortie;
 
-    @Column(name = "LANGUE_ORIGINALE", length = 50, nullable = false)
     private String langueOriginale;
 
-    @Column(name = "DUREE_MINUTES", precision = 4, nullable = false)
     private Integer dureeMinutes;
 
-    @Column(name = "RESUME", length = 4000, nullable = false)
     private String resume;
 
-    @Column(name = "URL_AFFICHE", length = 500)
     private String urlAffiche;
 
-    @Column(name = "ID_REALISATEUR", nullable = false)
     private Long idRealisateur;
 
     // Relation 1-N avec Copie
-    @OneToMany(mappedBy = "film")
     private List<Copie> copies;
+
+    // Constructeur vide
+    public Film() {
+    }
 
     // Getters et Setters
     public Long getIdFilm() {

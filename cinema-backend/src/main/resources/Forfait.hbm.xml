@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="ca.etsmtl.log660.cinema_backend.model.Forfait" table="FORFAIT">
+        <id name="code" column="CODE">
+            <generator class="assigned"/>
+        </id>
+        <property name="nom" column="NOM"/>
+        <property name="coutMensuel" column="COUT_MENSUEL"/>
+        <property name="locationsMax" column="LOCATIONS_MAX"/>
+        <property name="dureeMaxJours" column="DUREE_MAX_JOURS"/>
+    </class>
+</hibernate-mapping>
