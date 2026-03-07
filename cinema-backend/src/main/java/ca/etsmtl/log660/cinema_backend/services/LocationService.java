@@ -1,96 +1,68 @@
 package ca.etsmtl.log660.cinema_backend.services;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.Optional;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import org.springframework.stereotype.Service;
 
+import ca.etsmtl.log660.cinema_backend.facade.GestionCinemaFacade;
 import ca.etsmtl.log660.cinema_backend.model.Client;
 import ca.etsmtl.log660.cinema_backend.model.Copie;
 import ca.etsmtl.log660.cinema_backend.model.Film;
 import ca.etsmtl.log660.cinema_backend.model.Location;
 import ca.etsmtl.log660.cinema_backend.util.ErrorEnum;
-import ca.etsmtl.log660.cinema_backend.util.HibernateUtil;
 
 @Service
 public class LocationService {
 
-    private final SessionFactory sessionFactory;
+    private final GestionCinemaFacade facade;
 
-    public LocationService() {
-        this.sessionFactory = HibernateUtil.getSessionFactory();
+    public LocationService(GestionCinemaFacade facade) {
+        this.facade = facade;
     }
 
     public Optional<ErrorEnum> location(long filmId, String email) {
 
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = facade.getSession()) {
+
             Transaction tx = session.beginTransaction();
 
-            Query<Client> clientQuery = session.createQuery(
-                    "FROM Client c WHERE c.courriel = :email",
-                    Client.class);
-            clientQuery.setParameter("email", email);
-
-            Client client = clientQuery.uniqueResult();
+            Client client = facade.findClientByEmail(session, email);
 
             if (client == null) {
                 return Optional.of(ErrorEnum.LOCATION_ERROR_INVALID_ID);
             }
 
-            Film film = session.get(Film.class, filmId);
+            Film film = facade.findFilmById(session, filmId);
+
             if (film == null) {
                 return Optional.of(ErrorEnum.LOCATION_ERROR_INVALID_ID);
             }
 
-            Query<Long> alreadyQuery = session.createQuery("""
-                        SELECT COUNT(l.idLocation)
-                        FROM Location l
-                        WHERE l.client.idClient = :clientId
-                        AND l.copie.film.idFilm = :filmId
-                        AND l.dateRetourEffective IS NULL
-                    """, Long.class);
+            Long already = facade.countActiveLocation(
+                    session,
+                    client.getIdClient(),
+                    filmId);
 
-            alreadyQuery.setParameter("clientId", client.getIdClient());
-            alreadyQuery.setParameter("filmId", filmId);
-
-            Long alreadyCount = alreadyQuery.uniqueResult();
-
-            if (alreadyCount != null && alreadyCount > 0) {
+            if (already != null && already > 0) {
                 return Optional.of(ErrorEnum.LOCATION_ERROR_USER_ALREADY_HAS_COPY);
             }
 
-            Query<Copie> copieQuery = session.createQuery("""
-                        FROM Copie c
-                        WHERE c.film.idFilm = :filmId
-                        AND c.disponible = 'O'
-                    """, Copie.class);
+            Copie copie = facade.findAvailableCopy(session, filmId);
 
-            copieQuery.setParameter("filmId", filmId);
-            copieQuery.setMaxResults(1);
-
-            Copie copieDisponible = copieQuery.uniqueResult();
-
-            if (copieDisponible == null) {
+            if (copie == null) {
                 return Optional.of(ErrorEnum.LOCATION_ERROR_NOT_ENOUGH_COPIES);
             }
 
             Location location = new Location();
             location.setClient(client);
-            location.setCopie(copieDisponible);
-            location.setDateLocation(Date.valueOf(LocalDate.now()));
+            location.setCopie(copie);
 
-            Date retourPrevu = new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000);
-            location.setDateRetourPrevue(retourPrevu);
+            facade.saveLocation(session, location);
 
-            session.persist(location);
-
-            copieDisponible.setDisponible("N");
-            session.merge(copieDisponible);
+            copie.setDisponible("N");
+            facade.updateCopie(session, copie);
 
             tx.commit();
 
