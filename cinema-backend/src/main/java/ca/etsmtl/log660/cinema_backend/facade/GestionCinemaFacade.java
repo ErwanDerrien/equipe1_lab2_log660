@@ -24,19 +24,16 @@ public class GestionCinemaFacade {
         return sessionFactory.openSession();
     }
 
-
     // ------------------------
     // CLIENT
     // ------------------------
 
     public Client findClientByEmail(Session session, String email) {
-
         Query<Client> query = session.createQuery(
-                "FROM Client c WHERE c.courriel = :email",
-                Client.class);
-
+            "FROM Client c WHERE c.utilisateur.courriel = :email",
+            Client.class
+        );
         query.setParameter("email", email);
-
         return query.uniqueResult();
     }
 
@@ -53,7 +50,6 @@ public class GestionCinemaFacade {
     // ------------------------
 
     public Long countActiveLocation(Session session, long clientId, long filmId) {
-
         Query<Long> query = session.createQuery("""
                 SELECT COUNT(l.idLocation)
                 FROM Location l
@@ -77,7 +73,6 @@ public class GestionCinemaFacade {
     // ------------------------
 
     public Copie findAvailableCopy(Session session, long filmId) {
-
         Query<Copie> query = session.createQuery("""
                 FROM Copie c
                 WHERE c.film.idFilm = :filmId
