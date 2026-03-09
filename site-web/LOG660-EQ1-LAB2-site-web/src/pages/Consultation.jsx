@@ -32,7 +32,7 @@ function Consultation() {
         );
 
         setTitre(response.data.titre);
-        setUrlAffiche(response.data.urlAffiche);
+        setUrlAffiche(response.data.urlAffiche.replace("http", "https"));
         setNomRealisateur(response.data.nomRealisateur);
         setAnneeSortie(response.data.anneeSortie);
         setLangueOriginale(response.data.langueOriginale);
