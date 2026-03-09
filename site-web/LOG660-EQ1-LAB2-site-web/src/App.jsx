@@ -7,8 +7,10 @@ import Consultation from "./pages/Consultation";
 import "./App.css";
 
 function App() {
-  const [sessionToken, setSessionToken] = useState("");
-  const [selectedFilmId, setSelectedFilmId] = useState("");
+  const [sessionToken, setSessionToken] = useState(
+    localStorage.getItem("token") || ""
+  );
+
   return (
     <Routes>
       <Route
@@ -20,24 +22,17 @@ function App() {
           />
         }
       />
+
       <Route
         path="/Recherche"
-        element={
-          <RechercheFilm
-            sessionToken={sessionToken}
-            setSelectedFilmId={setSelectedFilmId}
-          />
-        }
+        element={<RechercheFilm sessionToken={sessionToken} />}
       />
+
       <Route path="/Inscription" element={<Inscription />} />
+
       <Route
-        path="/Consultation"
-        element={
-          <Consultation
-            sessionToken={sessionToken}
-            selectedFilmId={selectedFilmId}
-          />
-        }
+        path="/Consultation/:id"
+        element={<Consultation sessionToken={sessionToken} />}
       />
     </Routes>
   );

@@ -165,8 +165,7 @@ function Film({ titre, urlAffiche, nomRealisateur, id, setSelectedFilmId }) {
   const navigate = useNavigate();
 
   function filmClicked() {
-    setSelectedFilmId(id);
-    navigate("/Consultation");
+  navigate(`/Consultation/${id}`);
   }
 
   return (
