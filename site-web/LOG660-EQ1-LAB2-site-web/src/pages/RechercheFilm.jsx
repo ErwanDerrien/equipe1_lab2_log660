@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import "./RechercheFilm.css";
 import DatePicker from "react-date-picker";
@@ -15,7 +15,7 @@ function FilmComponents({ films, setSelectedFilmId }) {
     <Film
       key={film.id}
       titre={film.titre}
-      urlAffiche={film.urlAffiche}
+      urlAffiche={film.urlAffiche.replace("http", "https")}
       nomRealisateur={film.nomRealisateur}
       id={film.id}
       setSelectedFilmId={setSelectedFilmId}
@@ -37,8 +37,7 @@ function RechercheFilm({ setSelectedFilmId }) {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.get("http://localhost:8080/api/recherche", {
-        params: {
+      const params = {
           titre: inputTitre || null,
           realisateur: inputRealisateur || null,
           genre: inputGenre || null,
@@ -50,13 +49,27 @@ function RechercheFilm({ setSelectedFilmId }) {
           dateSortieFin: inputAnneeSuperieure
             ? inputAnneeSuperieure.toISOString().split("T")[0]
             : null,
-        },
+        }
+
+      const response = await axios.get("http://localhost:8080/api/recherche", {
+        params: params,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       setFilms(response.data);
+      
+      const url = new URL(window.location.href);
+      url.searchParams.set("titre", params.titre)
+      url.searchParams.set("realisateur", params.realisateur)
+      url.searchParams.set("genre", params.genre)
+      url.searchParams.set("langue", params.langue)
+      url.searchParams.set("pays", params.pays)
+      url.searchParams.set("dateSortieDebut", params.dateSortieDebut)
+      url.searchParams.set("dateSortieFin", params.dateSortieFin)
+      history.pushState({}, "", url);
+
     } catch (error) {
       console.log(error);
       setFilms([]);
