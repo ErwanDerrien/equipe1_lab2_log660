@@ -1,0 +1,18 @@
+.RechercheHeadingButtons {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.RechercheInfo {
+  display: flex;
+  align-items: center;
+}
+.RechercheBase {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem;
+}
+.RechercheAnnee {
+  display: flex;
+  align-items: center;
+}

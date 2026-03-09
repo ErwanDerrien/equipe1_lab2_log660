@@ -1,0 +1,25 @@
+p {
+  margin: 0.1rem;
+}
+
+.InscriptionInfo {
+  display: flex;
+  flex-direction: column;
+}
+.InscriptionBase {
+  display: flex;
+  flex-direction: column;
+}
+.InscriptionNomComplet {
+  display: flex;
+}
+.InscriptionLocalisation {
+  display: flex;
+  flex-direction: column;
+}
+.InscriptionAdresse {
+  display: flex;
+}
+.InscriptionRegion {
+  display: flex;
+}
