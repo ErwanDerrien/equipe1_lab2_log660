@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./Inscription.css";
 import { useNavigate } from "react-router";
 import axios from "axios";
@@ -16,138 +16,84 @@ function Inscription() {
   const [inputVille, setInputVille] = useState("");
   const [inputProvince, setInputProvince] = useState("");
   const [inputCodePostal, setInputCodePostal] = useState("");
-  const [inputDate, setInputDate] = useState("");
+  const [inputDate, setInputDate] = useState(null);
   const [inputMotDePasse, setInputMotDePasse] = useState("");
 
-  function saveNom(event) {
-    setInputNom(event.target.value);
-  }
-  function savePrenom(event) {
-    setInputPrenom(event.target.value);
-  }
-  function saveCourriel(event) {
-    setInputCourriel(event.target.value);
-  }
-  function saveTelephone(event) {
-    setInputTelephone(event.target.value);
-  }
-  function saveAdresse(event) {
-    setInputAdresse(event.target.value);
-  }
-  function saveRue(event) {
-    setInputRue(event.target.value);
-  }
-  function saveVille(event) {
-    setInputVille(event.target.value);
-  }
-  function saveProvince(event) {
-    setInputProvince(event.target.value);
-  }
-  function saveCodePostal(event) {
-    setInputCodePostal(event.target.value);
-  }
-  function saveMotDePasse(event) {
-    setInputMotDePasse(event.target.value);
-  }
+  const passwordRegex = /^[A-Za-z0-9]{5,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  return (
-    <>
-      <title>Inscription</title>
-      <header>Inscription</header>
-      <div className="InscriptionInfo">
-        <div className="InscriptionNomComplet">
-          <div className="InscriptionBase">
-            <p>Nom:</p>
-            <input onChange={saveNom} />
-          </div>
-          <div className="InscriptionBase">
-            <p>Prenom:</p>
-            <input onChange={savePrenom} />
-          </div>
-        </div>
-        <div className="InscriptionBase">
-          <p>Adresse Courriel:</p>
-          <input onChange={saveCourriel} />
-        </div>
-        <div className="InscriptionBase">
-          <p>Numéro de Téléphone:</p>
-          <input onChange={saveTelephone} />
-        </div>
-        <div className="InscriptionLocalisation">
-          <div className="InscriptionAdresse">
-            <div className="InscriptionBase">
-              <p>Numéro d'Adresse Civique:</p>
-              <input onChange={saveAdresse} />
-            </div>
-            <div className="InscriptionBase">
-              <p>Rue:</p>
-              <input onChange={saveRue} />
-            </div>
-          </div>
-          <div className="InscriptionRegion">
-            <div className="InscriptionBase">
-              <p>Ville:</p>
-              <input onChange={saveVille} />
-            </div>
-            <div className="InscriptionBase">
-              <p>Province:</p>
-              <input onChange={saveProvince} />
-            </div>
-          </div>
-          <div className="InscriptionBase">
-            <p>Code Postal:</p>
-            <input onChange={saveCodePostal} />
-          </div>
-        </div>
-        <div className="InscriptionBase">
-          <p>Date de Naissance:</p>
-          <DatePicker onChange={setInputDate} value={inputDate} />
-        </div>
-        <div className="InscriptionBase">
-          <p>Mot de Passe:</p>
-          <input onChange={saveMotDePasse} />
-        </div>
-      </div>
-      <button
-        onClick={Inscrire(
-          inputNom,
-          inputPrenom,
-          inputCourriel,
-          inputTelephone,
-          inputAdresse,
-          inputRue,
-          inputVille,
-          inputProvince,
-          inputCodePostal,
-          inputDate,
-          inputMotDePasse,
-        )}
-      >
-        Inscription
-      </button>
-    </>
-  );
-}
-
-function Inscrire(
-  inputNom,
-  inputPrenom,
-  inputCourriel,
-  inputTelephone,
-  inputAdresse,
-  inputRue,
-  inputVille,
-  inputProvince,
-  inputCodePostal,
-  inputDate,
-  inputMotDePasse,
-) {
   const navigate = useNavigate();
-  let registerOk = "";
 
-  axios
-    .post("http://localhost:3000/api/register", {
-      params: {
+  async function inscrire() {
+    if (!inputNom.trim()) {
+      alert("Le nom est obligatoire.");
+      return;
+    }
+
+    if (!inputPrenom.trim()) {
+      alert("Le prénom est obligatoire.");
+      return;
+    }
+
+    if (!inputCourriel.trim()) {
+      alert("Le courriel est obligatoire.");
+      return;
+    }
+
+    if (!emailRegex.test(inputCourriel)) {
+      alert("Veuillez entrer une adresse courriel valide.");
+      return;
+    }
+
+    if (!inputTelephone.trim()) {
+      alert("Le numéro de téléphone est obligatoire.");
+      return;
+    }
+
+    if (!inputAdresse.trim()) {
+      alert("Le numéro d'adresse civique est obligatoire.");
+      return;
+    }
+
+    if (!inputRue.trim()) {
+      alert("La rue est obligatoire.");
+      return;
+    }
+
+    if (!inputVille.trim()) {
+      alert("La ville est obligatoire.");
+      return;
+    }
+
+    if (!inputProvince.trim()) {
+      alert("La province est obligatoire.");
+      return;
+    }
+
+    if (!inputCodePostal.trim()) {
+      alert("Le code postal est obligatoire.");
+      return;
+    }
+
+    if (!inputDate) {
+      alert("La date de naissance est obligatoire.");
+      return;
+    }
+
+    if (!inputMotDePasse.trim()) {
+      alert("Le mot de passe est obligatoire.");
+      return;
+    }
+
+    if (!passwordRegex.test(inputMotDePasse)) {
+      alert(
+        "Le mot de passe doit contenir au moins 5 caractères et seulement des lettres et des chiffres."
+      );
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8080/auth/register", {
         nom: inputNom,
         prenom: inputPrenom,
         courriel: inputCourriel,
@@ -157,37 +103,123 @@ function Inscrire(
         ville: inputVille,
         province: inputProvince,
         codePostal: inputCodePostal,
-        dateNaissance: inputDate,
+        dateNaissance: inputDate.toISOString().split("T")[0],
         motDePasse: inputMotDePasse,
-      },
-    })
-    .then((response) => {
-      registerOk = response.data;
-      console.log(response.data);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+      });
 
-  useEffect(() => {
-    if (registerOk) {
+      console.log(response.data);
+      alert("Inscription réussie.");
       navigate("/");
+    } catch (error) {
+      console.log(error);
+      alert("Erreur lors de l'inscription.");
     }
-  }, [registerOk, navigate]);
+  }
+
+  return (
+    <>
+      <title>Inscription</title>
+      <header>Inscription</header>
+
+      <div className="InscriptionInfo">
+        <div className="InscriptionNomComplet">
+          <div className="InscriptionBase">
+            <p>Nom:</p>
+            <input
+              value={inputNom}
+              onChange={(e) => setInputNom(e.target.value)}
+            />
+          </div>
+
+          <div className="InscriptionBase">
+            <p>Prenom:</p>
+            <input
+              value={inputPrenom}
+              onChange={(e) => setInputPrenom(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="InscriptionBase">
+          <p>Adresse Courriel:</p>
+          <input
+            value={inputCourriel}
+            onChange={(e) => setInputCourriel(e.target.value)}
+          />
+        </div>
+
+        <div className="InscriptionBase">
+          <p>Numéro de Téléphone:</p>
+          <input
+            value={inputTelephone}
+            onChange={(e) => setInputTelephone(e.target.value)}
+          />
+        </div>
+
+        <div className="InscriptionLocalisation">
+          <div className="InscriptionAdresse">
+            <div className="InscriptionBase">
+              <p>Numéro d'Adresse Civique:</p>
+              <input
+                value={inputAdresse}
+                onChange={(e) => setInputAdresse(e.target.value)}
+              />
+            </div>
+
+            <div className="InscriptionBase">
+              <p>Rue:</p>
+              <input
+                value={inputRue}
+                onChange={(e) => setInputRue(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="InscriptionRegion">
+            <div className="InscriptionBase">
+              <p>Ville:</p>
+              <input
+                value={inputVille}
+                onChange={(e) => setInputVille(e.target.value)}
+              />
+            </div>
+
+            <div className="InscriptionBase">
+              <p>Province:</p>
+              <input
+                value={inputProvince}
+                onChange={(e) => setInputProvince(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="InscriptionBase">
+            <p>Code Postal:</p>
+            <input
+              value={inputCodePostal}
+              onChange={(e) => setInputCodePostal(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="InscriptionBase">
+          <p>Date de Naissance:</p>
+          <DatePicker onChange={setInputDate} value={inputDate} />
+        </div>
+
+        <div className="InscriptionBase">
+          <p>Mot de Passe:</p>
+          <input
+            type="password"
+            value={inputMotDePasse}
+            onChange={(e) => setInputMotDePasse(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <button onClick={inscrire}>Inscription</button>
+    </>
+  );
 }
 
 export default Inscription;
-
-/*
-    String nom,
-    String prenom,
-    String courriel,
-    String telephone,
-    String adresseCivique,
-    String rue,
-    String ville,
-    String province,
-    String codePostal,
-    LocalDate dateNaissance,
-    String motDePasse) {}
-*/

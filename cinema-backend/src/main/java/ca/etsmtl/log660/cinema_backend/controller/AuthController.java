@@ -44,20 +44,22 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterDTO request) {
+    public ResponseEntity<?> register(@RequestBody RegisterDTO request) {
         try {
             userService.register(request);
         } catch (Exception e) {
-            return ResponseEntity.status(400).build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.courriel(),
                             request.motDePasse()));
         } catch (Exception e) {
-            return ResponseEntity.status(400).build();
+            return ResponseEntity.status(400).body("Inscription réussie, mais échec de l'authentification.");
         }
+
         return ResponseEntity.ok(new AuthResponseDTO(jwtService.generateToken(request.courriel())));
     }
 }

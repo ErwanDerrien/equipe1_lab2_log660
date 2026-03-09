@@ -37,6 +37,11 @@ public class AuthenticationService implements UserDetailsService {
             throw new RuntimeException("Email already registered");
         }
 
+        if (dto.motDePasse() == null || !dto.motDePasse().matches("^[A-Za-z0-9]{5,}$")) {
+            throw new RuntimeException(
+                    "Le mot de passe doit contenir au moins 5 caractères et seulement des lettres et des chiffres.");
+        }
+
         Utilisateur utilisateur = new Utilisateur();
 
         utilisateur.setNom(dto.nom());

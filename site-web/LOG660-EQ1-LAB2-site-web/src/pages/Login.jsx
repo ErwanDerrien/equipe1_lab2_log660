@@ -1,41 +1,56 @@
-import { Link } from "react-router";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useState } from "react";
 import axios from "axios";
 import "./Login.css";
 
-function Login({ setSessionToken, sessionToken }) {
+function Login({ setSessionToken }) {
   const [inputCourriel, setInputCourriel] = useState("");
   const [inputMotDePasse, setInputMotDePasse] = useState("");
+  const navigate = useNavigate();
 
-  function saveCourriel(event) {
-    setInputCourriel(event.target.value);
-  }
+  async function connecter() {
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        courriel: inputCourriel,
+        password: inputMotDePasse,
+      });
 
-  function saveMotDePasse(event) {
-    setInputMotDePasse(event.target.value);
+      const token = response.data.token ?? response.data;
+
+      setSessionToken(token);
+      localStorage.setItem("token", token);
+
+      setInputCourriel("");
+      setInputMotDePasse("");
+      navigate("/Recherche");
+    } catch (error) {
+      console.log(error);
+      alert("Échec de la connexion.");
+    }
   }
 
   return (
     <>
       <title>Login</title>
       <header>Connexion</header>
+
       <div className="LoginDetails">
-        <input onChange={saveCourriel} placeholder="courriel" />
-        <input onChange={saveMotDePasse} placeholder="mot de passe" />
+        <input
+          value={inputCourriel}
+          onChange={(e) => setInputCourriel(e.target.value)}
+          placeholder="courriel"
+        />
+
+        <input
+          type="password"
+          value={inputMotDePasse}
+          onChange={(e) => setInputMotDePasse(e.target.value)}
+          placeholder="mot de passe"
+        />
+
         <div className="Buttons">
-          <button
-            onClick={Connecter(
-              inputCourriel,
-              setInputCourriel,
-              inputMotDePasse,
-              setInputMotDePasse,
-              setSessionToken,
-              sessionToken,
-            )}
-          >
-            Connexion
-          </button>
+          <button onClick={connecter}>Connexion</button>
+
           <Link to="/Inscription">
             <button>Inscription</button>
           </Link>
@@ -43,38 +58,6 @@ function Login({ setSessionToken, sessionToken }) {
       </div>
     </>
   );
-}
-
-function Connecter(
-  inputCourriel,
-  setInputCourriel,
-  inputMotDePasse,
-  setInputMotDePasse,
-  setSessionToken,
-  sessionToken,
-) {
-  const navigate = useNavigate();
-  axios
-    .get("http://localhost:3000/api/login", {
-      params: {
-        courriel: inputCourriel,
-        password: inputMotDePasse,
-      },
-    })
-    .then((response) => {
-      setSessionToken(response.data);
-      setInputCourriel("");
-      setInputMotDePasse("");
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-
-  useEffect(() => {
-    if (sessionToken) {
-      navigate("/Recherche");
-    }
-  }, [sessionToken, navigate]);
 }
 
 export default Login;

@@ -32,9 +32,9 @@ public class RechercheFacade {
     public List<RechercheResultDTO> rechercheFilms(Session session, RechercheDTO dto) {
 
         StringBuilder hql = new StringBuilder("""
-            SELECT f.idFilm, f.titre, f.urlAffiche, r.nom
+            SELECT f.idFilm, f.titre, f.urlAffiche, p.nom
             FROM Film f
-            JOIN Realisateur r ON f.idRealisateur = r.idRealisateur
+            JOIN Personne p ON f.idRealisateur = p.idPersonne
             WHERE 1=1
         """);
 
@@ -102,21 +102,21 @@ public class RechercheFacade {
                 f.idFilm,
                 f.titre,
                 f.urlAffiche,
-                r.nom,
+                p.nom,
                 f.anneeSortie,
                 f.langueOriginale,
                 f.dureeMinutes,
                 f.resume,
                 COUNT(c.idCopie)
             FROM Film f
-            JOIN Realisateur r ON f.idRealisateur = r.idRealisateur
+            JOIN Personne p ON f.idRealisateur = p.idPersonne
             LEFT JOIN Copie c ON c.film.idFilm = f.idFilm
             WHERE f.idFilm = :id
             GROUP BY 
                 f.idFilm,
                 f.titre,
                 f.urlAffiche,
-                r.nom,
+                p.nom,
                 f.anneeSortie,
                 f.langueOriginale,
                 f.dureeMinutes,

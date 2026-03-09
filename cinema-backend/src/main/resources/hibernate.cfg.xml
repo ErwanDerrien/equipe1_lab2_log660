@@ -22,5 +22,6 @@
         <mapping resource="Film.hbm.xml"/>
         <mapping resource="Copie.hbm.xml"/>
         <mapping resource="Location.hbm.xml"/>
+        <mapping resource="Personne.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

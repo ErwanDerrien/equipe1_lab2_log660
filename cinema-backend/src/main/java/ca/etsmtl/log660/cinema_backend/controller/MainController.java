@@ -25,7 +25,7 @@ import ca.etsmtl.log660.cinema_backend.services.AuthenticationService;
 import ca.etsmtl.log660.cinema_backend.util.ErrorEnum;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api")
 public class MainController {
     private final RechercheService rechercheService;

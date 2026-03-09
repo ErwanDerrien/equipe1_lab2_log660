@@ -1,41 +1,26 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import "./RechercheFilm.css";
-import { useNavigate } from "react-router";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
 
-function FilmComponents({ films, setFilms, setSelectedFilmId }) {
-  setFilms([
-    {
-      titre: "Star Wars",
-      urlAffiche:
-        "https://static.wikia.nocookie.net/lucasfilm/images/8/87/StarWarsMoviePoster1977.jpg/revision/latest/scale-to-width-down/1000?cb=20150203191803",
-      nomRealisateur: "George Lucas",
-      id: "1",
-    },
-    {
-      titre: "The Bullet Train",
-      urlAffiche:
-        "https://image.tmdb.org/t/p/original/eXaBBPqJRkW4SGqkbiLHNzDbzIf.jpg",
-      nomRealisateur: "Junya Satou",
-      id: "2",
-    },
-  ]);
+function FilmComponents({ films, setSelectedFilmId }) {
+  if (!films || films.length === 0) {
+    return <p>Aucun film trouvé.</p>;
+  }
 
-  return films.map((film) => {
-    return (
-      <Film
-        titre={film.titre}
-        urlAffiche={film.urlAffiche}
-        nomRealisateur={film.nomRealisateur}
-        id={film.id}
-        setSelectedFilmId={setSelectedFilmId}
-      />
-    );
-  });
+  return films.map((film) => (
+    <Film
+      key={film.id}
+      titre={film.titre}
+      urlAffiche={film.urlAffiche}
+      nomRealisateur={film.nomRealisateur}
+      id={film.id}
+      setSelectedFilmId={setSelectedFilmId}
+    />
+  ));
 }
 
 function RechercheFilm({ setSelectedFilmId }) {
@@ -45,85 +30,96 @@ function RechercheFilm({ setSelectedFilmId }) {
   const [inputGenre, setInputGenre] = useState("");
   const [inputLangue, setInputLangue] = useState("");
   const [inputPays, setInputPays] = useState("");
-  const [inputAnneeInferieure, setInputAnneeInferieure] = useState("");
-  const [inputAnneeSuperieure, setInputAnneeSuperieure] = useState("");
+  const [inputAnneeInferieure, setInputAnneeInferieure] = useState(null);
+  const [inputAnneeSuperieure, setInputAnneeSuperieure] = useState(null);
 
-  function Recherche({
-    setFilms,
-    inputTitre,
-    inputRealisateur,
-    inputGenre,
-    inputLangue,
-    inputPays,
-    inputAnneeInferieure,
-    inputAnneeSuperieure,
-  }) {
-    axios
-      .get("http://localhost:3000/api/recherche", {
+  async function rechercher() {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get("http://localhost:8080/api/recherche", {
         params: {
-          titre: inputTitre,
-          realisateur: inputRealisateur,
-          genre: inputGenre,
-          langue: inputLangue,
-          pays: inputPays,
-          dateSortieDebut: inputAnneeInferieure,
-          dateSortieFin: inputAnneeSuperieure,
+          titre: inputTitre || null,
+          realisateur: inputRealisateur || null,
+          genre: inputGenre || null,
+          langue: inputLangue || null,
+          pays: inputPays || null,
+          dateSortieDebut: inputAnneeInferieure
+            ? inputAnneeInferieure.toISOString().split("T")[0]
+            : null,
+          dateSortieFin: inputAnneeSuperieure
+            ? inputAnneeSuperieure.toISOString().split("T")[0]
+            : null,
         },
-      })
-      .then((response) => {
-        setFilms(response.data);
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-  }
 
-  function handleTitre(event) {
-    setInputTitre(event.target.value);
-  }
-  function handleRealisateur(event) {
-    setInputRealisateur(event.target.value);
-  }
-  function handleGenre(event) {
-    setInputGenre(event.target.value);
-  }
-  function handleLangue(event) {
-    setInputLangue(event.target.value);
-  }
-  function handlePays(event) {
-    setInputPays(event.target.value);
+      setFilms(response.data);
+    } catch (error) {
+      console.log(error);
+      setFilms([]);
+      alert("Erreur lors de la recherche de films.");
+    }
   }
 
   return (
     <>
       <title>Recherche de film</title>
       <header className="RechercheHeader">Recherche de Films</header>
+
       <div className="RechercheHeadingButtons">
         <Link to="/">
           <button>Connexion</button>
         </Link>
+
         <Link to="/Inscription">
           <button>Inscription</button>
         </Link>
       </div>
+
       <div className="RechercheInfo">
         <div className="RechercheBase">
           <p>Titre du film:</p>
-          <input onChange={handleTitre} />
+          <input
+            value={inputTitre}
+            onChange={(e) => setInputTitre(e.target.value)}
+          />
         </div>
+
         <div className="RechercheBase">
           <p>Réalisateur:</p>
-          <input onChange={handleRealisateur} />
+          <input
+            value={inputRealisateur}
+            onChange={(e) => setInputRealisateur(e.target.value)}
+          />
         </div>
+
         <div className="RechercheBase">
           <p>Genre:</p>
-          <input onChange={handleGenre} />
+          <input
+            value={inputGenre}
+            onChange={(e) => setInputGenre(e.target.value)}
+          />
         </div>
+
         <div className="RechercheBase">
           <p>Langue:</p>
-          <input onChange={handleLangue} />
+          <input
+            value={inputLangue}
+            onChange={(e) => setInputLangue(e.target.value)}
+          />
         </div>
+
         <div className="RechercheBase">
           <p>Pays:</p>
-          <input onChange={handlePays} />
+          <input
+            value={inputPays}
+            onChange={(e) => setInputPays(e.target.value)}
+          />
         </div>
+
         <div className="RechercheBase">
           <p>Année de sortie entre:</p>
           <div className="RechercheAnnee">
@@ -138,25 +134,13 @@ function RechercheFilm({ setSelectedFilmId }) {
             />
           </div>
         </div>
-        <button
-          onClick={Recherche(
-            setFilms,
-            inputTitre,
-            inputRealisateur,
-            inputGenre,
-            inputLangue,
-            inputPays,
-            inputAnneeInferieure,
-            inputAnneeSuperieure,
-          )}
-        >
-          Chercher Film
-        </button>
+
+        <button onClick={rechercher}>Chercher Film</button>
       </div>
+
       <div>
         <FilmComponents
           films={films}
-          setFilms={setFilms}
           setSelectedFilmId={setSelectedFilmId}
         />
       </div>
@@ -164,48 +148,21 @@ function RechercheFilm({ setSelectedFilmId }) {
   );
 }
 
-function Film({
-  titreFilm,
-  urlAffiche,
-  nomRealisateur,
-  id,
-  setSelectedFilmId,
-}) {
+function Film({ titre, urlAffiche, nomRealisateur, id, setSelectedFilmId }) {
+  const navigate = useNavigate();
+
+  function filmClicked() {
+    setSelectedFilmId(id);
+    navigate("/Consultation");
+  }
+
   return (
-    <div onClick={FilmClicked(id, setSelectedFilmId)}>
-      <h2>{titreFilm}</h2>
-      <img src={urlAffiche} width="100" />
+    <div onClick={filmClicked} style={{ cursor: "pointer" }}>
+      <h2>{titre}</h2>
+      <img src={urlAffiche} width="100" alt={titre} />
       <h3>Réalisateur: {nomRealisateur}</h3>
     </div>
   );
 }
 
-function FilmClicked({ id, setSelectedFilmId }) {
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (id) {
-      setSelectedFilmId(id);
-      navigate("/Consultation");
-    }
-  }, [id, navigate, setSelectedFilmId]);
-}
-
 export default RechercheFilm;
-
-/*
-SELECT 
-                f.idFilm,
-                f.titre,
-                f.urlAffiche,
-                r.nom,
-                f.anneeSortie,
-                f.langueOriginale,
-                f.dureeMinutes,
-                f.resume,
-                COUNT(c.idCopie)
-
-                long id,
-        String titre,
-        String urlAffiche,
-        String nomRealisateur
-*/

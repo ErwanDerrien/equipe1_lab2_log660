@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="ca.etsmtl.log660.cinema_backend.model.Personne" table="PERSONNE">
+        <id name="idPersonne" column="ID_PERSONNE">
+            <generator class="sequence">
+                <param name="sequence_name">SEQ_PERSONNE</param>
+                <param name="increment_size">1</param>
+            </generator>
+        </id>
+
+        <property name="nom" column="NOM"/>
+        <property name="prenom" column="PRENOM"/>
+        <property name="dateNaissance" column="DATE_NAISSANCE" type="date"/>
+        <property name="lieuNaissance" column="LIEU_NAISSANCE"/>
+        <property name="urlPhoto" column="URL_PHOTO"/>
+        <property name="biographie" column="BIOGRAPHIE"/>
+    </class>
+</hibernate-mapping>
