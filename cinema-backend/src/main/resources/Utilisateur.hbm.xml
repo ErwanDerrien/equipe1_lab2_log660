@@ -5,7 +5,10 @@
 <hibernate-mapping>
     <class name="ca.etsmtl.log660.cinema_backend.model.Utilisateur" table="UTILISATEUR">
         <id name="idUtilisateur" column="ID_UTILISATEUR">
-            <generator class="native"/>
+            <generator class="sequence">
+                <param name="sequence_name">SEQ_UTILISATEUR</param>
+                <param name="increment_size">1</param>
+            </generator>
         </id>
         <property name="nom" column="NOM"/>
         <property name="prenom" column="PRENOM"/>

@@ -5,7 +5,10 @@
 <hibernate-mapping>
     <class name="ca.etsmtl.log660.cinema_backend.model.Location" table="LOCATION">
         <id name="idLocation" column="ID_LOCATION">
-            <generator class="native"/>
+            <generator class="sequence">
+                <param name="sequence_name">SEQ_LOCATION</param>
+                <param name="increment_size">1</param>
+            </generator>
         </id>
         <property name="dateLocation" column="DATE_LOCATION" type="date"/>
         <property name="dateRetourPrevue" column="DATE_RETOUR_PREVUE" type="date"/>

@@ -15,7 +15,6 @@
         <property name="hibernate.default_schema">EQUIPE201</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">none</property>
-        
         <!-- Mapping des fichiers HBM -->
         <mapping resource="Utilisateur.hbm.xml"/>
         <mapping resource="Client.hbm.xml"/>
