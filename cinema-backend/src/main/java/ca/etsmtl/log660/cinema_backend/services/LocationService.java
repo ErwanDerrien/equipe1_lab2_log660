@@ -12,6 +12,7 @@ import ca.etsmtl.log660.cinema_backend.facade.GestionCinemaFacade;
 import ca.etsmtl.log660.cinema_backend.model.Client;
 import ca.etsmtl.log660.cinema_backend.model.Copie;
 import ca.etsmtl.log660.cinema_backend.model.Film;
+import ca.etsmtl.log660.cinema_backend.model.Forfait;
 import ca.etsmtl.log660.cinema_backend.model.Location;
 import ca.etsmtl.log660.cinema_backend.util.ErrorEnum;
 
@@ -42,6 +43,12 @@ public class LocationService {
                 return Optional.of(ErrorEnum.LOCATION_ERROR_INVALID_ID);
             }
 
+            Forfait forfait = facade.findForfaitByCode(session, client.getTypeForfait());
+            if (forfait == null) {
+                tx.rollback();
+                return Optional.of(ErrorEnum.LOCATION_ERROR_INVALID_ID);
+            }
+
             Long already = facade.countActiveLocation(
                     session,
                     client.getIdClient(),
@@ -52,19 +59,28 @@ public class LocationService {
                 return Optional.of(ErrorEnum.LOCATION_ERROR_USER_ALREADY_HAS_COPY);
             }
 
+            Long nbLocationsActives = facade.countActiveLocationsForClient(session, client.getIdClient());
+            if (nbLocationsActives != null
+                    && forfait.getLocationsMax() != null
+                    && nbLocationsActives >= forfait.getLocationsMax()) {
+                tx.rollback();
+                return Optional.of(ErrorEnum.LOCATION_ERROR_FORFAIT_LIMIT);
+            }
+
             Copie copie = facade.findAvailableCopy(session, filmId);
             if (copie == null) {
                 tx.rollback();
                 return Optional.of(ErrorEnum.LOCATION_ERROR_NOT_ENOUGH_COPIES);
             }
 
+            LocalDate aujourdHui = LocalDate.now();
+            int dureeMaxJours = forfait.getDureeMaxJours() == null ? 7 : forfait.getDureeMaxJours();
+
             Location location = new Location();
             location.setClient(client);
             location.setCopie(copie);
-
-            LocalDate aujourdHui = LocalDate.now();
             location.setDateLocation(Date.valueOf(aujourdHui));
-            location.setDateRetourPrevue(Date.valueOf(aujourdHui.plusDays(7)));
+            location.setDateRetourPrevue(Date.valueOf(aujourdHui.plusDays(dureeMaxJours)));
             location.setDateRetourEffective(null);
 
             facade.saveLocation(session, location);

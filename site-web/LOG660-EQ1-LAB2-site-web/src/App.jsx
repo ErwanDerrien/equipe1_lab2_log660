@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import RechercheFilm from "./pages/RechercheFilm";
 import Inscription from "./pages/Inscription";
 import Consultation from "./pages/Consultation";
+import Personne from "./pages/Personne";
 import "./App.css";
 
 function App() {
@@ -33,6 +34,11 @@ function App() {
       <Route
         path="/Consultation/:id"
         element={<Consultation sessionToken={sessionToken} />}
+      />
+
+      <Route
+        path="/Personne/:id"
+        element={<Personne sessionToken={sessionToken} />}
       />
     </Routes>
   );

@@ -1,0 +1,41 @@
+.PersonnePage {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.PersonneRetour {
+  margin-bottom: 20px;
+}
+
+.PersonneTitre {
+  margin-bottom: 20px;
+}
+
+.PersonneContenu {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.PersonnePhoto {
+  width: 220px;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.PersonneInfos {
+  flex: 1;
+  min-width: 280px;
+}
+
+.PersonneInfos h3 {
+  margin: 8px 0;
+}
+
+.PersonneBio {
+  margin-top: 16px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}

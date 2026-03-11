@@ -18,23 +18,33 @@ import java.util.List;
 @Service
 public class AuthenticationService implements UserDetailsService {
 
-    private final AuthFacade AuthFacade;
+    private final AuthFacade authFacade;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationService(AuthFacade AuthFacade,
+    public AuthenticationService(AuthFacade authFacade,
                                  PasswordEncoder passwordEncoder) {
-        this.AuthFacade = AuthFacade;
+        this.authFacade = authFacade;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Utilisateur findByCourriel(String courriel) {
-        return AuthFacade.findByCourriel(courriel);
+        return authFacade.findByCourriel(courriel);
     }
 
     public boolean register(RegisterDTO dto) {
 
-        if (AuthFacade.findByCourriel(dto.courriel()) != null) {
+        String courriel = dto.courriel() == null ? null : dto.courriel().trim();
+
+        if (courriel == null || courriel.isBlank()) {
+            throw new RuntimeException("Le courriel est obligatoire.");
+        }
+
+        if (authFacade.findByCourriel(courriel) != null) {
             throw new RuntimeException("Email already registered");
+        }
+
+        if (dto.dateNaissance() == null) {
+            throw new RuntimeException("La date de naissance est obligatoire.");
         }
 
         if (dto.motDePasse() == null || !dto.motDePasse().matches("^[A-Za-z0-9]{5,}$")) {
@@ -46,7 +56,7 @@ public class AuthenticationService implements UserDetailsService {
 
         utilisateur.setNom(dto.nom());
         utilisateur.setPrenom(dto.prenom());
-        utilisateur.setCourriel(dto.courriel());
+        utilisateur.setCourriel(courriel);
         utilisateur.setTelephone(dto.telephone());
         utilisateur.setAdresseCivique(dto.adresseCivique());
         utilisateur.setRue(dto.rue());
@@ -56,7 +66,7 @@ public class AuthenticationService implements UserDetailsService {
         utilisateur.setDateNaissance(Date.valueOf(dto.dateNaissance()));
         utilisateur.setMotDePasse(passwordEncoder.encode(dto.motDePasse()));
 
-        AuthFacade.saveUtilisateur(utilisateur);
+        authFacade.saveUtilisateurEtClient(utilisateur, "D");
 
         return true;
     }
@@ -65,7 +75,7 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        Utilisateur utilisateur = AuthFacade.findByCourriel(username);
+        Utilisateur utilisateur = authFacade.findByCourriel(username);
 
         if (utilisateur == null) {
             throw new UsernameNotFoundException("User not found");

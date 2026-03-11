@@ -8,12 +8,14 @@ function Consultation() {
 
   const [titre, setTitre] = useState("");
   const [urlAffiche, setUrlAffiche] = useState("");
+  const [idRealisateur, setIdRealisateur] = useState(null);
   const [nomRealisateur, setNomRealisateur] = useState("");
   const [anneeSortie, setAnneeSortie] = useState("");
   const [langueOriginale, setLangueOriginale] = useState("");
   const [dureeMinutes, setDureeMinutes] = useState("");
   const [resume, setResume] = useState("");
   const [nbCopies, setNbCopies] = useState(0);
+  const [acteurs, setActeurs] = useState([]);
 
   useEffect(() => {
     async function chargerConsultation() {
@@ -32,13 +34,19 @@ function Consultation() {
         );
 
         setTitre(response.data.titre);
-        setUrlAffiche(response.data.urlAffiche.replace("http", "https"));
+        setUrlAffiche(
+          response.data.urlAffiche
+            ? response.data.urlAffiche.replace("http", "https")
+            : ""
+        );
+        setIdRealisateur(response.data.idRealisateur);
         setNomRealisateur(response.data.nomRealisateur);
         setAnneeSortie(response.data.anneeSortie);
         setLangueOriginale(response.data.langueOriginale);
         setDureeMinutes(response.data.dureeMinutes);
         setResume(response.data.resume);
         setNbCopies(response.data.nbCopies);
+        setActeurs(response.data.acteurs || []);
       } catch (error) {
         console.log(error);
         alert("Erreur lors du chargement du film.");
@@ -66,8 +74,14 @@ function Consultation() {
       navigate("/Recherche");
     } catch (error) {
       console.log(error);
-      alert("Erreur lors de la location.");
+      const message = error.response?.data || "Erreur lors de la location.";
+      alert(message);
     }
+  }
+
+  function voirPersonne(personneId) {
+    if (!personneId) return;
+    navigate(`/Personne/${personneId}`);
   }
 
   return (
@@ -78,11 +92,37 @@ function Consultation() {
 
       {urlAffiche && <img src={urlAffiche} alt={titre} width="200" />}
 
-      <h3>Par: {nomRealisateur}</h3>
+      <h3>
+        Par :{" "}
+        <button type="button" onClick={() => voirPersonne(idRealisateur)}>
+          {nomRealisateur}
+        </button>
+      </h3>
+
       <h3>Année: {anneeSortie}</h3>
       <h3>Langue: {langueOriginale}</h3>
       <h3>Durée: {dureeMinutes} minutes</h3>
       <p>{resume}</p>
+
+      <h3>Acteurs</h3>
+      {acteurs.length === 0 ? (
+        <p>Aucun acteur disponible.</p>
+      ) : (
+        <ul>
+          {acteurs.map((acteur) => (
+            <li key={acteur.idActeur}>
+              <button
+                type="button"
+                onClick={() => voirPersonne(acteur.idActeur)}
+              >
+                {acteur.prenom} {acteur.nom}
+              </button>
+              {acteur.nomPersonnage ? ` — ${acteur.nomPersonnage}` : ""}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <h3>Copies disponibles: {nbCopies}</h3>
 
       <button onClick={louerFilm} disabled={nbCopies <= 0}>

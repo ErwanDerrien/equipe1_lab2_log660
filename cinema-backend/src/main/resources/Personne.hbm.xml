@@ -18,4 +18,4 @@
         <property name="urlPhoto" column="URL_PHOTO"/>
         <property name="biographie" column="BIOGRAPHIE"/>
     </class>
-</hibernate-mapping>
+</hibernate-mapping> 

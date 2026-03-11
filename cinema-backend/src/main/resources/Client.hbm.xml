@@ -5,13 +5,20 @@
 <hibernate-mapping>
     <class name="ca.etsmtl.log660.cinema_backend.model.Client" table="CLIENT">
         <id name="idClient" column="ID_CLIENT">
-        <generator class="enhanced-sequence">
-            <param name="sequence_name">SEQ_UTILISATEUR</param>
-            <param name="increment_size">1</param>
-        </generator>
+            <generator class="enhanced-sequence">
+                <param name="sequence_name">SEQ_CLIENT</param>
+                <param name="increment_size">1</param>
+            </generator>
         </id>
+
         <property name="typeForfait" column="TYPE_FORFAIT"/>
-        <many-to-one name="utilisateur" column="ID_UTILISATEUR" unique="true" not-null="true"/>
+
+        <many-to-one
+                name="utilisateur"
+                column="ID_UTILISATEUR"
+                unique="true"
+                not-null="true"/>
+
         <bag name="locations" inverse="true" cascade="all">
             <key column="ID_CLIENT"/>
             <one-to-many class="ca.etsmtl.log660.cinema_backend.model.Location"/>

@@ -3,7 +3,6 @@ package ca.etsmtl.log660.cinema_backend.controller;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.boot.security.autoconfigure.SecurityProperties.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,9 +18,10 @@ import ca.etsmtl.log660.cinema_backend.dtos.ConsultationResultDTO;
 import ca.etsmtl.log660.cinema_backend.dtos.LocationDTO;
 import ca.etsmtl.log660.cinema_backend.dtos.RechercheDTO;
 import ca.etsmtl.log660.cinema_backend.dtos.RechercheResultDTO;
+import ca.etsmtl.log660.cinema_backend.model.Personne;
+import ca.etsmtl.log660.cinema_backend.services.AuthenticationService;
 import ca.etsmtl.log660.cinema_backend.services.LocationService;
 import ca.etsmtl.log660.cinema_backend.services.RechercheService;
-import ca.etsmtl.log660.cinema_backend.services.AuthenticationService;
 import ca.etsmtl.log660.cinema_backend.util.ErrorEnum;
 
 @RestController
@@ -30,7 +30,10 @@ import ca.etsmtl.log660.cinema_backend.util.ErrorEnum;
 public class MainController {
     private final RechercheService rechercheService;
     private final LocationService locationService;
-    public MainController(RechercheService rechercheService, LocationService locationService, AuthenticationService userService) {
+
+    public MainController(RechercheService rechercheService,
+            LocationService locationService,
+            AuthenticationService userService) {
         this.rechercheService = rechercheService;
         this.locationService = locationService;
     }
@@ -53,8 +56,21 @@ public class MainController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/personne/{id}")
+    public ResponseEntity<Personne> personne(@PathVariable long id) {
+        Personne personne = rechercheService.getPersonne(id);
+        if (personne == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(personne);
+    }
+
     @PostMapping("/location")
     public ResponseEntity<String> createLocation(Authentication authentication, @RequestBody LocationDTO locationDTO) {
+        if (authentication == null || authentication.getName() == null || authentication.getName().isBlank()) {
+            return ResponseEntity.status(401).body("Authentication required.");
+        }
+
         Optional<ErrorEnum> error = locationService.location(locationDTO.id(), authentication.getName());
         if (error.isEmpty()) {
             return ResponseEntity.ok("Location created successfully.");
@@ -64,6 +80,8 @@ public class MainController {
                 return ResponseEntity.status(400).body("Not enough copies available.");
             case LOCATION_ERROR_USER_ALREADY_HAS_COPY:
                 return ResponseEntity.status(400).body("User already has a copy of this film.");
+            case LOCATION_ERROR_FORFAIT_LIMIT:
+                return ResponseEntity.status(400).body("Client has reached the maximum number of active rentals for the forfait.");
             case LOCATION_ERROR_INVALID_ID:
                 return ResponseEntity.status(400).body("Invalid film ID.");
             default:

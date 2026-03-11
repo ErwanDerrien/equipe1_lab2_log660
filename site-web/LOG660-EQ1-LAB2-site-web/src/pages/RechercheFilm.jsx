@@ -1,12 +1,12 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import "./RechercheFilm.css";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
 
-function FilmComponents({ films, setSelectedFilmId }) {
+function FilmComponents({ films }) {
   if (!films || films.length === 0) {
     return <p>Aucun film trouvé.</p>;
   }
@@ -15,18 +15,18 @@ function FilmComponents({ films, setSelectedFilmId }) {
     <Film
       key={film.id}
       titre={film.titre}
-      urlAffiche={film.urlAffiche.replace("http", "https")}
+      urlAffiche={film.urlAffiche}
       nomRealisateur={film.nomRealisateur}
       id={film.id}
-      setSelectedFilmId={setSelectedFilmId}
     />
   ));
 }
 
-function RechercheFilm({ setSelectedFilmId }) {
+function RechercheFilm() {
   const [films, setFilms] = useState([]);
   const [inputTitre, setInputTitre] = useState("");
   const [inputRealisateur, setInputRealisateur] = useState("");
+  const [inputActeur, setInputActeur] = useState("");
   const [inputGenre, setInputGenre] = useState("");
   const [inputLangue, setInputLangue] = useState("");
   const [inputPays, setInputPays] = useState("");
@@ -38,40 +38,44 @@ function RechercheFilm({ setSelectedFilmId }) {
       const token = localStorage.getItem("token");
 
       const params = {
-          titre: inputTitre || null,
-          realisateur: inputRealisateur || null,
-          genre: inputGenre || null,
-          langue: inputLangue || null,
-          pays: inputPays || null,
-          dateSortieDebut: inputAnneeInferieure
-            ? inputAnneeInferieure.toISOString().split("T")[0]
-            : null,
-          dateSortieFin: inputAnneeSuperieure
-            ? inputAnneeSuperieure.toISOString().split("T")[0]
-            : null,
-        }
+        titre: inputTitre || null,
+        realisateur: inputRealisateur || null,
+        acteur: inputActeur || null,
+        genre: inputGenre || null,
+        langue: inputLangue || null,
+        pays: inputPays || null,
+        dateSortieDebut: inputAnneeInferieure
+          ? inputAnneeInferieure.toISOString().split("T")[0]
+          : null,
+        dateSortieFin: inputAnneeSuperieure
+          ? inputAnneeSuperieure.toISOString().split("T")[0]
+          : null,
+      };
 
       const response = await axios.get("http://localhost:8080/api/recherche", {
-        params: params,
+        params,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       setFilms(response.data);
-      
-      const url = new URL(window.location.href);
-      url.searchParams.set("titre", params.titre)
-      url.searchParams.set("realisateur", params.realisateur)
-      url.searchParams.set("genre", params.genre)
-      url.searchParams.set("langue", params.langue)
-      url.searchParams.set("pays", params.pays)
-      url.searchParams.set("dateSortieDebut", params.dateSortieDebut)
-      url.searchParams.set("dateSortieFin", params.dateSortieFin)
-      history.pushState({}, "", url);
 
+      const url = new URL(window.location.href);
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+          url.searchParams.set(key, value);
+        } else {
+          url.searchParams.delete(key);
+        }
+      });
+      history.pushState({}, "", url);
     } catch (error) {
       console.log(error);
+      if (error.response?.status === 404) {
+        setFilms([]);
+        return;
+      }
       setFilms([]);
       alert("Erreur lors de la recherche de films.");
     }
@@ -106,6 +110,14 @@ function RechercheFilm({ setSelectedFilmId }) {
           <input
             value={inputRealisateur}
             onChange={(e) => setInputRealisateur(e.target.value)}
+          />
+        </div>
+
+        <div className="RechercheBase">
+          <p>Acteur:</p>
+          <input
+            value={inputActeur}
+            onChange={(e) => setInputActeur(e.target.value)}
           />
         </div>
 
@@ -152,26 +164,25 @@ function RechercheFilm({ setSelectedFilmId }) {
       </div>
 
       <div>
-        <FilmComponents
-          films={films}
-          setSelectedFilmId={setSelectedFilmId}
-        />
+        <FilmComponents films={films} />
       </div>
     </>
   );
 }
 
-function Film({ titre, urlAffiche, nomRealisateur, id, setSelectedFilmId }) {
+function Film({ titre, urlAffiche, nomRealisateur, id }) {
   const navigate = useNavigate();
 
   function filmClicked() {
-  navigate(`/Consultation/${id}`);
+    navigate(`/Consultation/${id}`);
   }
+
+  const safeAffiche = urlAffiche ? urlAffiche.replace("http", "https") : "";
 
   return (
     <div onClick={filmClicked} style={{ cursor: "pointer" }}>
       <h2>{titre}</h2>
-      <img src={urlAffiche} width="100" alt={titre} />
+      {safeAffiche && <img src={safeAffiche} width="100" alt={titre} />}
       <h3>Réalisateur: {nomRealisateur}</h3>
     </div>
   );
